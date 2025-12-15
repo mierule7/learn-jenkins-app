@@ -20,7 +20,8 @@ pipeline {
                 '''
             }
         }
-        stage('Test') {
+
+        stage('Test'){
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -35,7 +36,14 @@ pipeline {
                 '''
             }
         }    
-        stage('Deploy') {
+    }
+
+    post {
+        always {
+            junit'test-results/junit.xml'
+        }
+    }
+    stage('Deploy') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -44,15 +52,9 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm install netlify-cli -g
+                    npm install netlify-cli
                     netlify --version
                 '''
             }
-    }
-
-    post {
-        always {
-            junit'test-results/junit.xml'
         }
-    }
 }
